@@ -17,9 +17,14 @@ def prompt(message)
   Kernel.puts("=> #{message}")
 end
 
-def formula(p, j, n) # calculates monthly payment
-  (p.to_f * (j.to_f / (1 - (1 + j.to_f)**-n.to_f))).round(2)
-  # "%.2f" % m # rounds to 2 decimal places
+def check_valid_input(valid_number)
+  valid_number.empty?() || (valid_number.to_f() <= 0)
+end
+
+def calc_month_formula(loan_amount, month_int_rate, loan_duration)
+  (loan_amount.to_f \
+  * (month_int_rate.to_f / (1 - (1 + month_int_rate.to_f)\
+  **-loan_duration.to_f))).round(2)
 end
 
 prompt('Welcome to your Monthly Loan Calculator.')
@@ -28,49 +33,45 @@ loop do
   loan_amount = ''
   loop do
     loan_amount = Kernel.gets().chomp()
-    if loan_amount.empty?() || (loan_amount.to_f() <= 0)
-      prompt('Loan amount must be greater than $0.')
-      prompt('Please enter another amount:')
-    else
-      break
-    end
+    break unless check_valid_input(loan_amount)
+    prompt('Loan amount must be greater than $0.')
+    prompt('Please enter another amount:')
   end
 
   prompt('Please enter the Annual Percentage Rate (APR)')
   apr = ''
   loop do
     apr = Kernel.gets().chomp()
-    if apr.empty?() || (apr.to_f() <= 0)
-      prompt('APR must be greater than 0%.')
-      prompt('Please enter another amount:')
-    else
-      break
-    end
+    break unless check_valid_input(apr)
+    prompt('APR must be greater than 0%.')
+    prompt('Please enter another amount:')
   end
 
-  month_interest_rate = apr.to_f / 1200 # get monthly interest rate
+  month_int_rate = apr.to_f / 1200 # get monthly interest rate
 
   prompt('Please enter the number of years you would intend to take loan for:')
   years = ''
   loop do
     years = Kernel.gets().chomp()
-    if years.empty?() || (years.to_i(0) <= 0)
-      prompt('Number of Years must be greater than 0. Please enter again:')
-    else
-      break
-    end
+    break unless check_valid_input(years)
+    prompt('Number of Years must be greater than 0. Please enter again:')
   end
 
   loan_duration = years.to_i() * 12
 
-  monthly_payment = formula(loan_amount, month_interest_rate, loan_duration)
+  month_payment = calc_month_formula(loan_amount, month_int_rate, loan_duration)
 
   prompt("Your monthly payment will be:")
-  prompt("$#{monthly_payment} per month for #{years} years")
+  prompt("$#{month_payment} per month for #{years} years")
 
-  prompt('Do you want to calculate another?. Type Y to continue or N to end.')
-  answer = Kernel.gets().chomp()
-  break unless answer.downcase().start_with?('y')
+  answer = ''
+  loop do # check if Y or N is entered
+    prompt('Do you want to calculate another?. Type Y to continue or N to end.')
+    answer = Kernel.gets().chomp()
+    break unless !(%w(y n).include? answer.downcase())
+    prompt('Incorrect value. Please enter Y to continue or N to end.')
+  end
+  break unless answer.downcase() == 'y' # exit if N is answered
 end
 
 prompt("Thank you for using Loan Calculator. Good bye!")
