@@ -68,7 +68,7 @@ loop do
   loop do # check if Y or N is entered
     prompt('Do you want to calculate another?. Type Y to continue or N to end.')
     answer = Kernel.gets().chomp()
-    break if (%w(y n).include? answer.downcase())
+    break if %w(y n).include? answer.downcase()
     prompt('Incorrect value. Please enter Y to continue or N to end.')
   end
   break unless answer.downcase() == 'y' # exit if N is answered
