@@ -17,14 +17,14 @@ def prompt(message)
   Kernel.puts("=> #{message}")
 end
 
-def check_valid_input(valid_number)
+def valid_input?(valid_number)
   valid_number.empty?() || (valid_number.to_f() <= 0)
 end
 
 def calc_month_formula(loan_amount, month_int_rate, loan_duration)
-  (loan_amount.to_f \
-  * (month_int_rate.to_f / (1 - (1 + month_int_rate.to_f)\
-  **-loan_duration.to_f))).round(2)
+  (loan_amount.to_f *
+  (month_int_rate.to_f /
+  (1 - (1 + month_int_rate.to_f)**-loan_duration.to_f))).round(2)
 end
 
 prompt('Welcome to your Monthly Loan Calculator.')
@@ -33,7 +33,7 @@ loop do
   loan_amount = ''
   loop do
     loan_amount = Kernel.gets().chomp()
-    break unless check_valid_input(loan_amount)
+    break unless valid_input?(loan_amount)
     prompt('Loan amount must be greater than $0.')
     prompt('Please enter another amount:')
   end
@@ -42,7 +42,7 @@ loop do
   apr = ''
   loop do
     apr = Kernel.gets().chomp()
-    break unless check_valid_input(apr)
+    break unless valid_input?(apr)
     prompt('APR must be greater than 0%.')
     prompt('Please enter another amount:')
   end
@@ -53,7 +53,7 @@ loop do
   years = ''
   loop do
     years = Kernel.gets().chomp()
-    break unless check_valid_input(years)
+    break unless valid_input?(years)
     prompt('Number of Years must be greater than 0. Please enter again:')
   end
 
@@ -68,7 +68,7 @@ loop do
   loop do # check if Y or N is entered
     prompt('Do you want to calculate another?. Type Y to continue or N to end.')
     answer = Kernel.gets().chomp()
-    break unless !(%w(y n).include? answer.downcase())
+    break if (%w(y n).include? answer.downcase())
     prompt('Incorrect value. Please enter Y to continue or N to end.')
   end
   break unless answer.downcase() == 'y' # exit if N is answered
