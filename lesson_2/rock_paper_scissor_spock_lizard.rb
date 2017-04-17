@@ -10,10 +10,10 @@ end
 
 def win?(first, second)
   (first == 'rock(r)' && (second == 'scissors(sc)' || second == 'lizard(l)')) ||
-  (first == 'paper(p)' && (second == 'rock(r)' || second == 'spock')) ||
-  (first == 'scissors(sc)' && (second == 'paper(p)' || second == 'lizard(l)')) ||
-  (first == 'spock(sp)' && (second == 'scissors(sc)' || second == 'rock(r)')) ||
-  (first == 'lizard(l)' && (second == 'spock(sp)' || second == 'paper(p)'))
+    (first == 'paper(p)' && (second == 'rock(r)' || second == 'spock')) ||
+    (first == 'scissors(sc)' && (second == 'paper(p)' || second == 'lizard(l)')) ||
+    (first == 'spock(sp)' && (second == 'scissors(sc)' || second == 'rock(r)')) ||
+    (first == 'lizard(l)' && (second == 'spock(sp)' || second == 'paper(p)'))
 end
 
 def display_results(player, computer)
