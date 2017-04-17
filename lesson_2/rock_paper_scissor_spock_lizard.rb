@@ -4,16 +4,18 @@ VALID_CHOICES = { "r" => "rock(r)",
                   "sp" => "spock(sp)",
                   "l" => "lizard(l)" }
 
+WIN_CONDITIONS = { 'rock(r)' => ['scissors(sc)', 'lizard(l)'],
+                   'paper(p)' => ['rock(r)', 'spock(sp)'],
+                   'scissors(sc)' => ['paper(p)', 'lizard(l)'],
+                   'spock(sp)' => ['scissors(sc)', 'rock(r)'],
+                   'lizard(l)' => ['spock(sp)', 'paper(p)'] }
+
 def prompt(message)
   Kernel.puts("=> #{message}")
 end
 
 def win?(first, second)
-  (first == 'rock(r)' && (second == 'scissors(sc)' || second == 'lizard(l)')) ||
-    (first == 'paper(p)' && (second == 'rock(r)' || second == 'spock')) ||
-    (first == 'scissors(sc)' && (second == 'paper(p)' || second == 'lizard(l)')) ||
-    (first == 'spock(sp)' && (second == 'scissors(sc)' || second == 'rock(r)')) ||
-    (first == 'lizard(l)' && (second == 'spock(sp)' || second == 'paper(p)'))
+  WIN_CONDITIONS[first].include? second
 end
 
 def display_results(player, computer)
@@ -32,7 +34,8 @@ def display_score(player, computer, score_count)
   elsif win?(computer, player)
     score_count['computer'] = score_count['computer'] + 1
   end
-  prompt("You: #{score_count['you']} - Computer: #{score_count['computer']}")
+  prompt("The running score is:
+  You: #{score_count['you']} - Computer: #{score_count['computer']}")
 end
 
 running_score = { 'you' => 0, 'computer' => 0 }
@@ -50,14 +53,13 @@ loop do
     end
   end
 
-  computer_choice = VALID_CHOICES.keys.sample
+  computer_choice = VALID_CHOICES.keys().sample()
   your_choice_val = VALID_CHOICES[your_choice]
   comp_choice_val = VALID_CHOICES[computer_choice]
   prompt("You chose: #{your_choice_val}; Computer chose: #{comp_choice_val}")
 
   display_results(your_choice_val, comp_choice_val)
 
-  prompt("The running score is:")
   display_score(your_choice_val, comp_choice_val, running_score)
 
   if running_score['you'] == 5
