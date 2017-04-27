@@ -1,59 +1,9 @@
-mailing_campaign_leads = [
-  {name: 'Emma Lopez', email: 'emma.lopez@some_mail.com', days_since_login: 423, mailing_list: true},
-  {name: 'mike richards', email: 'michael.richards@some_mail.com', days_since_login: 23, mailing_list: false},
-  {name: 'JANE WILLIAMS', email: 'jane_w95@my_mail.com', days_since_login: 16, mailing_list: true},
-  {name: 'Ash Patel', email: 'ash_patel@my_mail.com', days_since_login: 22, mailing_list: true}
-]
-=begin
-counter = 0
-
-loop do
-  break if counter == mailing_campaign_leads.size
-  full_name = mailing_campaign_leads[counter][:name]
-  names = full_name.split
-
-  names_counter = 0
-  loop do
-    break if names_counter == names.size
-    name = names[names_counter]
-    names[names_counter] = name.capitalize
-
-    names_counter += 1
+statement = "The Flintstones Rock"
+out = statement.split("").each_with_object({}) do |i,hsh|
+  if hsh.key?(i)
+    hsh[i] = hsh[i] + 1
+  else
+    hsh[i] = 1
   end
-
-  capitalized_full_name = names.join(' ')
-  mailing_campaign_leads[counter][:name] = capitalized_full_name
-p capitalized_full_name
-  counter += 1
 end
-
-p mailing_campaign_leads
-usable_leads = []
-counter = 0
-
-loop do
-  break if counter == mailing_campaign_leads.size
-  last_login = mailing_campaign_leads[counter][:days_since_login]
-  subscribed_to_list = mailing_campaign_leads[counter][:mailing_list]
-
-  if last_login < 60 && subscribed_to_list
-    usable_leads << mailing_campaign_leads[counter]
-  end
-
-  counter += 1
-end
-
-p usable_leads
-
-=end
-psp = mailing_campaign_leads.each do |lead|
-  names = lead[:name].split
-  names.map! { |name| name.capitalize }
-  lead[:name] = names.join(' ')
-end
-
-usable_leads = mailing_campaign_leads.select do |lead|
-  lead[:days_since_login] < 60 && lead[:mailing_list]
-end
-p psp
-p usable_leads
+p out
