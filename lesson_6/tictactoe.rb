@@ -11,6 +11,8 @@
 10. Good Bye!
 =end
 
+require 'pry'
+
 INITIAL_MARKER = ' '
 PLAYER_MARKER = 'X'
 COMPUTER_MARKER = 'O'
@@ -23,9 +25,10 @@ def prompt(msg)
 end
 
 # rubocop:disable Metrics/MethodLength
-def dislay_board(brd)
+def dislay_board(brd, games)
   system 'clear' # clears the screen
   puts "You're a #{PLAYER_MARKER}. Computer is a #{COMPUTER_MARKER}"
+  puts "Games won: You = #{games["Player"]}. Computer = #{games["Computer"]}"
   puts ""
   puts "     |     |"
   puts "  #{brd[1]}  |  #{brd[2]}  |  #{brd[3]}"
@@ -51,10 +54,23 @@ def empty_squares(brd)
   brd.keys.select { |num| brd[num] == INITIAL_MARKER }
 end
 
+def joinor(arr, delim = ', ', join_word = 'or')
+  if arr.count == 0
+    ''
+  elsif arr.count == 1
+    arr.first
+  elsif arr.count == 2
+    arr.join(" #{join_word} ")
+  else
+    arr[arr.count - 1] = "#{join_word} #{arr[arr.count - 1]}"
+    arr.join(delim)
+  end
+end
+
 def player_places_piece!(brd)
   square = ''
   loop do
-    prompt "Choose a square (#{empty_squares(brd).join(',')}):"
+    prompt "Choose a square (#{joinor(empty_squares(brd))}):"
     square = gets.chomp.to_i
     break if empty_squares(brd).include?(square)
     prompt "Sorry, that's not a valid choice."
@@ -95,10 +111,12 @@ def detect_winner(brd)
   nil
 end
 
+games_won = {"Player" => 0, "Computer" => 0}
 loop do
   board = initialize_board
+
   loop do
-    dislay_board(board)
+    dislay_board(board, games_won)
 
     player_places_piece!(board)
     break if someone_won?(board) || board_full?(board)
@@ -107,14 +125,20 @@ loop do
     break if someone_won?(board) || board_full?(board)
   end
 
-  dislay_board(board)
+  dislay_board(board, games_won)
 
   if someone_won?(board)
     prompt "#{detect_winner(board)} won!"
+    case detect_winner(board)
+    when "Player" then games_won["Player"] += 1
+    else games_won["Computer"] += 1
+    end
   else
     prompt "Its's a tie!"
   end
 
+  break if games_won["Computer"] == 2 || games_won["Player"] == 2
+  
   prompt "Play again? (y or n)"
   answer = gets.chomp
   break unless answer.downcase.start_with?('y')
