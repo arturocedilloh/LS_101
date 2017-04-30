@@ -16,7 +16,7 @@ PLAYER_MARKER = 'X'
 COMPUTER_MARKER = 'O'
 WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] + # vertical
                 [[1, 4, 7], [2, 5, 8], [3, 6, 9]] + # horizontal
-                [[1, 5, 9], [3, 5, 7]] # diagonal
+                [[1, 5, 9], [3, 5, 7]]              # diagonal
 
 def prompt(msg)
   puts "=> #{msg}"
@@ -43,7 +43,7 @@ end
 
 def initialize_board
   new_board = {}
-  (1..9).each { |num| new_board[num] == INITIAL_MARKER }
+  (1..9).each { |num| new_board[num] = INITIAL_MARKER }
   new_board
 end
 
@@ -77,14 +77,19 @@ end
 
 def detect_winner(brd)
   WINNING_LINES.each do |line|
-    if brd[line[0]] == PLAYER_MARKER &&
-       brd[line[1]] == PLAYER_MARKER &&
-       brd[line[2]] == PLAYER_MARKER
-      return 'Player'
-    elsif brd[line[0]] == COMPUTER_MARKER &&
-          brd[line[1]] == COMPUTER_MARKER &&
-          brd[line[2]] == COMPUTER_MARKER
-      return 'Computer'
+    # if brd[line[0]] == PLAYER_MARKER &&
+    #    brd[line[1]] == PLAYER_MARKER &&
+    #    brd[line[2]] == PLAYER_MARKER
+    #   return 'Player'
+    # elsif brd[line[0]] == COMPUTER_MARKER &&
+    #       brd[line[1]] == COMPUTER_MARKER &&
+    #       brd[line[2]] == COMPUTER_MARKER
+    #   return 'Computer'
+    # end
+    if brd.values_at(line[0], line[1], line[2]).count(PLAYER_MARKER) == 3
+      return "Player"
+    elsif brd.values_at(line[0], line[1], line[2]).count(COMPUTER_MARKER) == 3
+      return "Computer"
     end
   end
   nil
@@ -92,7 +97,6 @@ end
 
 loop do
   board = initialize_board
-
   loop do
     dislay_board(board)
 
