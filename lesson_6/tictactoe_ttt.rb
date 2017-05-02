@@ -19,13 +19,16 @@ COMPUTER_MARKER = 'O'
 WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] + # vertical
                 [[1, 4, 7], [2, 5, 8], [3, 6, 9]] + # horizontal
                 [[1, 5, 9], [3, 5, 7]]              # diagonal
+WHO_GOES_FIRST = "CHOOSE"
+
+current_player = WHO_GOES_FIRST
 
 def prompt(msg)
   puts "=> #{msg}"
 end
 
 # rubocop:disable Metrics/MethodLength
-def dislay_board(brd, games)
+def display_board(brd, games)
   system 'clear' # clears the screen
   puts "You're a #{PLAYER_MARKER}. Computer is a #{COMPUTER_MARKER}"
   puts "Games won: You = #{games["Player"]}. Computer = #{games["Computer"]}"
@@ -79,7 +82,27 @@ def player_places_piece!(brd)
 end
 
 def computer_places_piece!(brd)
-  square = empty_squares(brd).sample
+  square = nil
+  WINNING_LINES.each do |line|
+    square = find_at_offensive_sqare(line, brd)
+    break if square
+  end
+
+  if !square
+    WINNING_LINES.each do |line|
+      square = find_at_risk_sqare(line, brd)
+      break if square
+    end
+  end
+
+  if !square && brd[5] == INITIAL_MARKER
+    square = 5
+  end
+
+  if !square
+    square = empty_squares(brd).sample
+  end
+
   brd[square] = COMPUTER_MARKER
 end
 
@@ -93,15 +116,6 @@ end
 
 def detect_winner(brd)
   WINNING_LINES.each do |line|
-    # if brd[line[0]] == PLAYER_MARKER &&
-    #    brd[line[1]] == PLAYER_MARKER &&
-    #    brd[line[2]] == PLAYER_MARKER
-    #   return 'Player'
-    # elsif brd[line[0]] == COMPUTER_MARKER &&
-    #       brd[line[1]] == COMPUTER_MARKER &&
-    #       brd[line[2]] == COMPUTER_MARKER
-    #   return 'Computer'
-    # end
     if brd.values_at(line[0], line[1], line[2]).count(PLAYER_MARKER) == 3
       return "Player"
     elsif brd.values_at(line[0], line[1], line[2]).count(COMPUTER_MARKER) == 3
@@ -111,21 +125,66 @@ def detect_winner(brd)
   nil
 end
 
+def find_at_risk_sqare(line, board)
+  if board.values_at(*line).count(PLAYER_MARKER) == 2
+    board.select {|k,v| line.include?(k) && v == INITIAL_MARKER}.keys.first
+  else
+    nil
+  end
+end
+
+def find_at_offensive_sqare(line, board)
+  if board.values_at(*line).count(COMPUTER_MARKER) == 2
+    board.select {|k,v| line.include?(k) && v == INITIAL_MARKER}.keys.first
+  else
+    nil
+  end
+end
+
+def place_piece!(brd, cur_player, games_w)
+  case cur_player
+  when "PLAYER"
+    display_board(brd, games_w)
+    player_places_piece!(brd)
+
+    computer_places_piece!(brd)
+  when "COMPUTER"
+    computer_places_piece!(brd)
+    display_board(brd, games_w)
+
+    player_places_piece!(brd)
+  end
+end
+
+def alternate_player(cur_player)
+  case cur_player
+  when "PLAYER" then "COMPUTER"
+  when "COMPUTER" then "PLAYER"
+  end
+end
+
 games_won = {"Player" => 0, "Computer" => 0}
+
+if WHO_GOES_FIRST == "CHOOSE"
+  loop do
+    prompt "Who should go first: Player or Computer?"
+    current_player = gets.chomp.upcase
+    break if %w(PLAYER COMPUTER).include? current_player
+    prompt('Incorrect value. Please enter Player or Computer.')
+  end
+end
+
 loop do
   board = initialize_board
 
   loop do
-    dislay_board(board, games_won)
-
-    player_places_piece!(board)
-    break if someone_won?(board) || board_full?(board)
-
-    computer_places_piece!(board)
+    display_board(board, games_won)
+    place_piece!(board, current_player, games_won)
+    current_player = alternate_player(current_player)
     break if someone_won?(board) || board_full?(board)
   end
 
-  dislay_board(board, games_won)
+  display_board(board, games_won)
 
   if someone_won?(board)
     prompt "#{detect_winner(board)} won!"
