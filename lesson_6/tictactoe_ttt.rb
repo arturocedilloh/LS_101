@@ -1,18 +1,3 @@
-=begin
-1. Display the initial empty 3x3 board
-2. Ask the user to mark a square
-3. Computer marks a square
-4. Display the updated board state.
-5. if winner, display winner.
-6. if the board is full, display tie.
-7. if neither winner nor board is full, go to #2
-8. Play again?
-9. if yes, go to #1
-10. Good Bye!
-=end
-
-require 'pry'
-
 INITIAL_MARKER = ' '
 PLAYER_MARKER = 'X'
 COMPUTER_MARKER = 'O'
@@ -27,11 +12,10 @@ def prompt(msg)
   puts "=> #{msg}"
 end
 
-# rubocop:disable Metrics/MethodLength
 def display_board(brd, games)
   system 'clear' # clears the screen
   puts "You're a #{PLAYER_MARKER}. Computer is a #{COMPUTER_MARKER}"
-  puts "Games won: You = #{games["Player"]}. Computer = #{games["Computer"]}"
+  puts "Games won: You = #{games['Player']}. Computer = #{games['Computer']}"
   puts ""
   puts "     |     |"
   puts "  #{brd[1]}  |  #{brd[2]}  |  #{brd[3]}"
@@ -45,7 +29,6 @@ def display_board(brd, games)
   puts "  #{brd[7]}  |  #{brd[8]}  |  #{brd[9]}"
   puts "     |     |"
 end
-# rubocop:enable Metrics/MethodLength
 
 def initialize_board
   new_board = {}
@@ -83,6 +66,7 @@ end
 
 def computer_places_piece!(brd)
   square = nil
+
   WINNING_LINES.each do |line|
     square = find_at_offensive_sqare(line, brd)
     break if square
@@ -95,13 +79,9 @@ def computer_places_piece!(brd)
     end
   end
 
-  if !square && brd[5] == INITIAL_MARKER
-    square = 5
-  end
+  square = 5 if !square && brd[5] == INITIAL_MARKER
 
-  if !square
-    square = empty_squares(brd).sample
-  end
+  square = empty_squares(brd).sample if !square
 
   brd[square] = COMPUTER_MARKER
 end
@@ -127,32 +107,21 @@ end
 
 def find_at_risk_sqare(line, board)
   if board.values_at(*line).count(PLAYER_MARKER) == 2
-    board.select {|k,v| line.include?(k) && v == INITIAL_MARKER}.keys.first
-  else
-    nil
+    board.select { |k, v| line.include?(k) && v == INITIAL_MARKER }.keys.first
   end
 end
 
 def find_at_offensive_sqare(line, board)
   if board.values_at(*line).count(COMPUTER_MARKER) == 2
-    board.select {|k,v| line.include?(k) && v == INITIAL_MARKER}.keys.first
-  else
-    nil
+    board.select { |k, v| line.include?(k) && v == INITIAL_MARKER }.keys.first
   end
 end
 
 def place_piece!(brd, cur_player, games_w)
+  display_board(brd, games_w)
   case cur_player
-  when "PLAYER"
-    display_board(brd, games_w)
-    player_places_piece!(brd)
-
-    computer_places_piece!(brd)
-  when "COMPUTER"
-    computer_places_piece!(brd)
-    display_board(brd, games_w)
-
-    player_places_piece!(brd)
+  when "PLAYER" then player_places_piece!(brd)
+  when "COMPUTER" then computer_places_piece!(brd)
   end
 end
 
@@ -163,35 +132,37 @@ def alternate_player(cur_player)
   end
 end
 
-games_won = {"Player" => 0, "Computer" => 0}
-
-if WHO_GOES_FIRST == "CHOOSE"
-  loop do
-    prompt "Who should go first: Player or Computer?"
-    current_player = gets.chomp.upcase
-    break if %w(PLAYER COMPUTER).include? current_player
-    prompt('Incorrect value. Please enter Player or Computer.')
-  end
-end
+games_won = { "Player" => 0, "Computer" => 0 }
 
 loop do
   board = initialize_board
+  display_board(board, games_won)
+
+  if WHO_GOES_FIRST == "CHOOSE"
+    loop do
+      prompt "Who should go first: Player or Computer?"
+      current_player = gets.chomp.upcase
+      break if %w[PLAYER COMPUTER].include? current_player
+      prompt('Incorrect value. Please enter Player or Computer.')
+    end
+  end
 
   loop do
     display_board(board, games_won)
+
     place_piece!(board, current_player, games_won)
     current_player = alternate_player(current_player)
     break if someone_won?(board) || board_full?(board)
   end
 
-  display_board(board, games_won)
-
   if someone_won?(board)
-    prompt "#{detect_winner(board)} won!"
     case detect_winner(board)
     when "Player" then games_won["Player"] += 1
     else games_won["Computer"] += 1
     end
+
+    display_board(board, games_won)
+    prompt "#{detect_winner(board)} won!"
   else
     prompt "Its's a tie!"
   end

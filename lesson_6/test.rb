@@ -9,17 +9,6 @@ bord = ['X', 'X',' ']
 
 
 def computer_places_piece!(brd)
-  square = ''
-  WINNING_LINES .each do |line|
-    if brd.values_at(0, 1, 2).count(PLAYER_MARKER) == 2
-      brd.each_with_index do |item, i|
-        if item == INITIAL_MARKER
-          square = i
-        end
-      end
-        brd[square] = COMPUTER_MARKER
-    end
-  end
 
 end
 
