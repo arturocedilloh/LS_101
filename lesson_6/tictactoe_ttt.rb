@@ -66,29 +66,28 @@ def player_places_piece!(brd)
   brd[square] = PLAYER_MARKER
 end
 
-def offensive_winning_square(brd)
+def best_square(brd, move_type)
   square = nil
-  WINNING_LINES.each do |line|
-    square = find_at_offensive_square(line, brd)
-    break if square
+  if move_type == "offensive"
+    WINNING_LINES.each do |line|
+      square = find_at_offensive_square(line, brd)
+      break if square
+    end
+    square
+  elsif move_type == "risk"
+    WINNING_LINES.each do |line|
+      square = find_at_risk_square(line, brd)
+      break if square
+    end
+    square
   end
-  square
-end
-
-def risk_winning_square(brd)
-  square = nil
-  WINNING_LINES.each do |line|
-    square = find_at_risk_square(line, brd)
-    break if square
-  end
-  square
 end
 
 def computer_places_piece!(brd)
-  square = offensive_winning_square(brd)
+  square = best_square(brd, "offensive")
 
   if !square
-    square = risk_winning_square(brd)
+    square = best_square(brd, "risk")
   end
 
   square = 5 if !square && brd[5] == INITIAL_MARKER
