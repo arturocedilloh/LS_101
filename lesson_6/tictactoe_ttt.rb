@@ -118,13 +118,17 @@ end
 
 def find_at_risk_square(line, brd)
   if brd.values_at(*line).count(PLAYER_MARKER) == 2
-    brd.select { |pos, v| line.include?(pos) && v == INITIAL_MARKER }.keys.first
+    brd.select do |position, square|
+      line.include?(position) && square == INITIAL_MARKER
+    end.keys.first
   end
 end
 
 def find_at_offensive_square(line, brd)
   if brd.values_at(*line).count(COMPUTER_MARKER) == 2
-    brd.select { |pos, v| line.include?(pos) && v == INITIAL_MARKER }.keys.first
+    brd.select do |position, square|
+      line.include?(position) && square == INITIAL_MARKER
+    end.keys.first
   end
 end
 
@@ -153,6 +157,7 @@ if WHO_GOES_FIRST == "CHOOSE"
     break if %w[PLAYER COMPUTER].include? current_player
     prompt("Incorrect value. Please enter Player or Computer.")
   end
+  WHO_GOES_FIRST = current_player
 end
 
 loop do
@@ -190,7 +195,9 @@ loop do
     break if %w[y n].include? answer
     prompt("Incorrect value. Please enter y or n.")
   end
+
   current_player = WHO_GOES_FIRST
+
   break unless answer.downcase == "y"
 end
 
