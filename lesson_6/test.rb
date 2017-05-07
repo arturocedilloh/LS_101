@@ -34,17 +34,21 @@ end
 p total_count
 
 =end
-def display_board(player, dealer)
-  system "clear" # clears the screen
-  puts ""
-  puts "  Dealers Cards  "
-  puts "                 "
-  puts "     #{dealer}"
-  puts "-----------------------------------------"
-  puts "  Player Cards  "
-  puts "                 "
-  puts "     #{player}"
-  puts "-------------------------------------------"
+def show_cards(cards, player)
+  output = ""
+  values = cards.map { |card| card[1]}
+  values.each do |value|
+    if output == ""
+      output = value
+    else
+      output = output + " and #{value}"
+    end
+  end
+  output = output + " and unknown card" if player == "Dealer"
+  output
 end
 
-display_board([["S", "9"], ["H", "A"]], [["H", "1"], ["H", "7"], ["H", "A"]])
+display_board = [["S", "9"]]
+p display_board
+
+ p show_cards(display_board, "Dealer")
