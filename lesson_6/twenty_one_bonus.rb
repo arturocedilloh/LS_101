@@ -1,5 +1,6 @@
 SUITS = ['H', 'D', 'S', 'C']
 VALUES = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
+WHATEVERONE = [21, 17]
 
 def prompt(msg)
   puts "=> #{msg}"
@@ -33,14 +34,14 @@ def total(cards)
 end
 
 def busted?(total)
-  total > 21
+  total > WHATEVERONE[0]
 end
 
 # :tie, :dealer, :player, :dealer_busted, :player_busted
 def detect_result(dealer_total, player_total)
-  if player_total > 21
+  if player_total > WHATEVERONE[0]
     :player_busted
-  elsif dealer_total > 21
+  elsif dealer_total > WHATEVERONE[0]
     :dealer_busted
   elsif dealer_total < player_total
     :player
@@ -51,21 +52,25 @@ def detect_result(dealer_total, player_total)
   end
 end
 
-def display_result(dealer_total, player_total)
+def display_result(dealer_total, player_total, score)
   result = detect_result(dealer_total, player_total)
-
   case result
   when :player_busted
     prompt "You busted! Dealer wins!"
+    score['Dealer'] += 1
   when :dealer_busted
     prompt "Dealer busted! You win!"
+    score['Player'] += 1
   when :player
     prompt "You win!"
+    score['Player'] += 1
   when :dealer
     prompt "Dealer wins!"
+    score['Dealer'] += 1
   when :tie
     prompt "It's a tie!"
   end
+  prompt "Games won: You = #{score['Player']}. Dealer = #{score['Dealer']}"
 end
 
 def play_again?
@@ -74,6 +79,15 @@ def play_again?
   answer = gets.chomp
   answer.downcase.start_with?('y')
 end
+
+def display_score(dealer_cards, dealer_total, player_cards, player_total)
+  puts "=============="
+  prompt "Dealer has #{dealer_cards}, for a total of: #{dealer_total}"
+  prompt "Player has #{player_cards}, for a total of: #{player_total}"
+  puts "=============="
+end
+
+games_won = { "Player" => 0, "Dealer" => 0 }
 
 loop do
   prompt "Welcome to Twenty-One!"
@@ -118,7 +132,8 @@ loop do
   end
 
   if busted?(player_total)
-    display_result(dealer_total, player_total)
+    display_score(dealer_cards, dealer_total, player_cards, player_total)
+    display_result(dealer_total, player_total, games_won)
     play_again? ? next : break
   else
     prompt "You stayed at #{player_total}"
@@ -129,7 +144,7 @@ loop do
 
   loop do
     dealer_total = total(dealer_cards)
-    break if dealer_total >= 17
+    break if dealer_total >= WHATEVERONE[1]
 
     prompt "Dealer hits!"
     dealer_cards << deck.pop
@@ -137,21 +152,25 @@ loop do
   end
 
   if busted?(dealer_total)
+    display_score(dealer_cards, dealer_total, player_cards, player_total)
     prompt "Dealer total is now: #{dealer_total}"
-    display_result(dealer_total, player_total)
+    display_result(dealer_total, player_total, games_won)
     play_again? ? next : break
   else
     prompt "Dealer stays at #{dealer_total}"
   end
 
   # both player and dealer stays - compare cards!
-  puts "=============="
-  prompt "Dealer has #{dealer_cards}, for a total of: #{dealer_total}"
-  prompt "Player has #{player_cards}, for a total of: #{player_total}"
-  puts "=============="
+  display_score(dealer_cards, dealer_total, player_cards, player_total)
+  display_result(dealer_total, player_total, games_won)
 
-  display_result(dealer_total, player_total)
-
+  if games_won["Dealer"] == 5
+    prompt "Dealer is the Winner!!!"
+    break
+  elsif games_won["Player"] == 5
+    prompt "You are the Winner!!!"
+    break
+  end
   break unless play_again?
 end
 
