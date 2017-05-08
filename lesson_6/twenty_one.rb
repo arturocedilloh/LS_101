@@ -105,10 +105,10 @@ loop do
     if player_answer == "h"
       prompt("You chose to hit!")
       player_cards.push(deck_cards.pop)
-      player_deck_count = total_deck_count(player_cards)
+      player_count = total_deck_count(player_cards)
       display_board(player_cards, dealer_cards, "display")
       puts "Dealer Count #{dealer_count}, Your count: #{player_count}"
-      break if busted?(player_deck_count)
+      break if busted?(player_count)
     else
       break
     end
@@ -121,26 +121,21 @@ loop do
   else
     prompt(" You chose to stay!")
     loop do
+      prompt(" Dealer hit!")
       dealer_cards.push(deck_cards.pop)
+      display_board(player_cards, dealer_cards, "final")
       dealer_count = total_deck_count(dealer_cards)
-      if dealer_count == player_count
-        display_board(player_cards, dealer_cards, "final")
-        puts "Dealer Count: #{dealer_count}, Your Count: #{player_count}"
+      if dealer_count == player_count && dealer_count >= 17
         puts "It's a TIE!!!"
-        break
-      elsif dealer_count == 17
-        display_board(player_cards, dealer_cards, "final")
         puts "Dealer Count: #{dealer_count}, Your Count: #{player_count}"
-        puts "You WIN!!!"
+        break
       elsif busted?(dealer_count)
-        display_board(player_cards, dealer_cards, "final")
-        puts "Dealer Count: #{dealer_count}, Your Count: #{player_count}"
         puts "Dealer busted!!! - You WIN!!!"
-        break
-      elsif dealer_count > 17 && (dealer_count > player_count)
-        display_board(player_cards, dealer_cards, "final")
         puts "Dealer Count: #{dealer_count}, Your Count: #{player_count}"
+        break
+      elsif dealer_count >= 17 && (dealer_count > player_count)
         puts "Dealer WINS!!!"
+        puts "Dealer Count: #{dealer_count}, Your Count: #{player_count}"
         break
       end
     end
@@ -154,3 +149,5 @@ loop do
   end
   break unless answer.downcase == "y"
 end
+
+prompt(" Thanks you for playing Twenty One. See you next time!")
