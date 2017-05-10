@@ -34,8 +34,7 @@ end
 p total_count
 
 =end
-def show_cards(cards, player)
-  output = ""
+def busted?
   values = cards.map { |card| card[1]}
   values.each do |value|
     if output == ""

@@ -1,7 +1,7 @@
 SUITS = ['H', 'D', 'S', 'C']
 VALUES = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
 MAX_COUNT = 21
-DEALER_MINUMUN = 17
+DEALER_MINIMUM = 17
 
 def prompt(msg)
   puts "=> #{msg}"
@@ -55,14 +55,10 @@ end
 
 def compute_result(result, score)
   case result
-  when :player_busted
+  when :player_busted, :dealer
     score['Dealer'] += 1
-  when :dealer_busted
+  when :dealer_busted, :player
     score['Player'] += 1
-  when :player
-    score['Player'] += 1
-  when :dealer
-    score['Dealer'] += 1
   end
 end
 
@@ -155,7 +151,7 @@ loop do
 
   loop do
     dealer_total = total(dealer_cards)
-    break if dealer_total >= DEALER_MINUMUN
+    break if dealer_total >= DEALER_MINIMUM
 
     prompt "Dealer hits!"
     dealer_cards << deck.pop
